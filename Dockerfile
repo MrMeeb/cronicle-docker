@@ -1,16 +1,14 @@
-FROM debian:bullseye-slim
+FROM alpine:latest
 
 ENV CRONICLE_foreground=1
 ENV CRONICLE_echo=1
 ENV CRONICLE_color=1
 ENV EDITOR=vi
-ENV MODE=master
+ENV MODE=manager
 
-RUN apt update && apt install -y tini curl git
+#RUN apt update && apt install -y tini curl git procps
 
-RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
-
-RUN apt install nodejs
+RUN apk update && apk add bash tini git procps nodejs npm
 
 RUN git clone https://github.com/cronicle-edge/cronicle-edge.git /opt/cronicle
 
@@ -24,10 +22,12 @@ COPY run.sh /
 
 RUN chmod +x /run.sh
 
+RUN mkdir /config
+
 #RUN ln -sf /dev/stdout /opt/cronicle/logs/Cronicle.log
 
 EXPOSE 3012
 
-ENTRYPOINT ["/usr/bin/tini", "--"]
+ENTRYPOINT ["/sbin/tini", "--"]
 
 CMD [ "/run.sh" ]
