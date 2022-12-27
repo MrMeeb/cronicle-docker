@@ -40,13 +40,13 @@ services:
 ```
 
 ## Ports
-|Port |Purpose   |
-|-----|----------|
+|Port |Description|
+|-----|-----------|
 |3012 |WebUI and communication between manager and workers|
 
 ## Volumes
-|Mount |Purpose   |
-|-----|-----------|
+|Mount |Description|
+|------|-----------|
 |/config |Persistent config file and job configurations|
 
 ## Environment Variables
