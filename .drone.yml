@@ -1,0 +1,41 @@
+
+kind: pipeline
+type: docker
+name: build-multiarch-images
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: make-tags
+  image: node
+  commands:
+    - echo -n "${DRONE_COMMIT_SHA:0:10}, latest" > .tags
+
+- name: build  
+  image: thegeeklab/drone-docker-buildx
+  privileged: true
+  settings:
+    registry: git.mrmeeb.stream
+    username: 
+      from_secret: docker_username
+    password: 
+      from_secret: docker_password
+    repo: git.mrmeeb.stream/mrmeeb/certbot-cron
+    platforms:
+      - linux/arm64
+      - linux/amd64
+
+- name: notify
+  image: plugins/slack
+  settings:
+    webhook: 
+      from_secret: slack_webhook
+
+trigger:
+  branch:
+    - main
+  event:
+    exclude:
+    - pull_request
