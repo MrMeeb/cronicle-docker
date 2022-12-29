@@ -13,12 +13,12 @@ Can function in both the **manager** and **worker** role.
 
 If you want to configure Cronicle before first run, download `config_sample.json` and adjust accordingly before placing in `/config/config.json`.
 
-NOTE: You need to define the hostname of the container if using `docker run`. Cronicle expects the hostname to remain the same, so the randomly-generated container hostname can cause problems if it changes. Docker Compose containers inherit their hostname from the `container_name` parameter, but it can also be defined using `hostname: xyz`.
+NOTE: You must define the hostname of the container. Cronicle expects the hostname to remain the same, so the randomly-generated container hostname can cause problems if it changes.
 
 ### Docker CLI
 ```
 docker run -d --name cronicle \
-    --hostname cronicle-docker \
+    --hostname cronicle-manager \
     -p 3012:3012 \
     -e MODE=manager \
     -v {path on host}:/config
@@ -34,6 +34,7 @@ services:
     container_name: cronicle
     image: git.mrmeeb.stream/mrmeeb/cronicle:latest
     restart: unless-stopped
+    hostname: cronicle-manager
     ports:
       - 3012:3012
     volumes:
