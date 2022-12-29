@@ -1,6 +1,7 @@
 # Cronicle Docker
 
-⚠️ This container is being actively developed and is not ready for use! ⚠️
+[![Build Status](https://drone.mrmeeb.stream/api/badges/MrMeeb/cronicle-docker/status.svg)](https://drone.mrmeeb.stream/MrMeeb/cronicle-docker) - _Every new commit triggers a build. I'm lazy._
+
 
 Dockerised Cronicle, based on the [Cronicle-Edge](https://github.com/cronicle-edge/cronicle-edge) fork.
 
@@ -9,6 +10,8 @@ Can function in both the **manager** and **worker** role.
 ## Running 
 
 `config.json`, located in `/config/config.json`, is automatically generated on the first run of Cronicle in 'manager' mode. This file must be kept identical between the manager and any workers it controls.
+
+If you want to configure Cronicle before first run, download `config_sample.json` and adjust accordingly before placing in `/config/config.json`.
 
 NOTE: You need to define the hostname of the container if using `docker run`. Cronicle expects the hostname to remain the same, so the randomly-generated container hostname can cause problems if it changes. Docker Compose containers inherit their hostname from the `container_name` parameter, but it can also be defined using `hostname: xyz`.
 
