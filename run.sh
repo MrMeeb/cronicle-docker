@@ -60,7 +60,17 @@ then
 
     echo "Cronicle is running in 'worker' mode"
 
-    exec node /opt/cronicle/lib/main.js --color 1
+    if [ ! -f /config/config.json ]
+    then
+
+        echo "No config found. Copy config.json from the manager server and place it in the /config dir"
+
+        exit 0
+    else
+
+        exec node /opt/cronicle/lib/main.js --color 1
+
+    fi
 
 else
     echo "'$MODE' is not a recognised option for MODE. Accepted options are 'manager' and 'worker'"
