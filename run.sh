@@ -6,40 +6,42 @@ then
 	if [ "$(ls -A /config/init)" ]
     then
 
-        echo "Running additional startup scripts"
+        echo "Running additional startup scripts."
 
         bash /config/init/*
 	
     else
         
-        echo "/config/init is empty - no additional startup scripts detected"
+        echo "/config/init is empty - no additional startup scripts detected."
 	
     fi
 else
 
-	echo "Directory /config/init not found. Recreating."
+	echo "Directory /config/init not found. Creating."
 
     mkdir /config/init
 
 fi
 
-#Copying config.json to /config if it isn't there already, then linking it back into Cronicle
-mv -n /opt/cronicle/conf/config.json /config/config.json
-rm -rf /opt/cronicle/conf/config.json
-ln -s /config/config.json /opt/cronicle/conf/config.json
-
 #Detecting what mode Cronicle should be started in
 if [ $MODE == "manager" ] 
 then
-    echo "Cronicle is running in 'manager' mode"
+    echo "Cronicle is running in 'manager' mode."
+    
+    #Copying config.json to /config if it isn't there already, then linking it back into Cronicle
+    mv -n /opt/cronicle/conf/config.json /config/config.json
+    rm -rf /opt/cronicle/conf/config.json
+    ln -s /config/config.json /opt/cronicle/conf/config.json
 
     if [ ! -f /config/data/.setup_done ]
     then
-        echo "Setup needed - running now"
+
+        echo "Setup needed - running now."
 
         /opt/cronicle/bin/control.sh setup
         touch /opt/cronicle/data/.setup_done
 
+        #Moving data dir to /config, then linking it back into Cronicle
         mv -n /opt/cronicle/data /config/data
         rm -rf /opt/cronicle/data
         ln -s /config/data /opt/cronicle/data
@@ -58,20 +60,27 @@ then
 elif [ $MODE == "worker" ] 
 then
 
-    echo "Cronicle is running in 'worker' mode"
+    echo "Cronicle is running in 'worker' mode."
 
     if [ ! -f /config/config.json ]
     then
 
-        echo "No config found. Copy config.json from the manager server and place it in the /config dir"
+        echo "No config found. Copy config.json from the manager server and place it in the /config dir."
 
         exit 0
+
     else
+
+        #Removing default config.json and linking provided one back into Cronicle
+        rm -rf /opt/cronicle/conf/config.json
+        ln -s /config/config.json /opt/cronicle/conf/config.json
 
         exec node /opt/cronicle/lib/main.js --color 1
 
     fi
 
 else
-    echo "'$MODE' is not a recognised option for MODE. Accepted options are 'manager' and 'worker'"
+
+    echo "'$MODE' is not a recognised option for the MODE environment variable. Accepted options are 'manager' and 'worker'."
+
 fi
