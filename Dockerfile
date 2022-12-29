@@ -24,6 +24,8 @@ RUN chmod +x /run.sh
 
 RUN mkdir /config
 
+RUN adduser --disabled-password --no-create-home cronicle
+
 #RUN ln -sf /dev/stdout /opt/cronicle/logs/Cronicle.log
 
 EXPOSE 3012
