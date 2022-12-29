@@ -42,12 +42,18 @@ services:
       - MODE=manager
 ```
 
+## Custom Scripts
+
+This container automatically checks for scripts in `/config/init` and runs them at startup of the container. This could be useful if you need to install additional applications into a worker container so it can execute any jobs.
+
 ## Ports
+
 |Port |Description|
 |-----|-----------|
 |3012 |WebUI and communication between manager and workers|
 
 ## Volumes
+
 |Mount |Description|
 |------|-----------|
 |/config |Persistent config file and job configurations|
