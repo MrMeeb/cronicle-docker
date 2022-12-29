@@ -5,7 +5,7 @@ name: build-multiarch-images
 
 platform:
   os: linux
-  arch: arm64
+  arch: amd64
 
 steps:
 - name: make-tags
