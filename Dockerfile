@@ -27,8 +27,8 @@ RUN apk update && apk add tzdata curl shadow bash xz git procps nodejs npm
 RUN mkdir /config && \
     mkdir /app && \
 #Create default user
-    useradd -u 1000 -U -d /config -s /bin/false mrmeeb && \
-    usermod -G users mrmeeb
+    useradd -u 1000 -U -d /config -s /bin/false cronicle && \
+    usermod -G users cronicle
 
 #Install s6-overlay
 RUN curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz" | tar Jpxf - -C / && \
@@ -43,9 +43,6 @@ WORKDIR /app/cronicle
 RUN npm install && \
     node bin/build dist
 RUN rm -rf /app/cronicle/Docker* .vscode
-
-#Create Cronicle user, necessary for SSH plugin with default settings
-RUN adduser --disabled-password --no-create-home cronicle
 
 COPY root/ /
 RUN chmod +x /cronicle-prepare.sh && \
