@@ -1,8 +1,19 @@
 # Cronicle Docker
 
+![Drone (self-hosted) with branch](https://img.shields.io/drone/build/MrMeeb/cronicle-docker/main?label=main&server=https%3A%2F%2Fdrone.mrmeeb.stream&style=for-the-badge) ![Drone (self-hosted) with branch](https://img.shields.io/drone/build/MrMeeb/cronicle-docker/develop?label=develop&server=https%3A%2F%2Fdrone.mrmeeb.stream&style=for-the-badge)
+
 Dockerised Cronicle, based on the [Cronicle-Edge](https://github.com/cronicle-edge/cronicle-edge) fork.
 
 Can function in both the **manager** and **worker** role.
+
+## Tags
+
+|Tag    |Description|
+|-------|-----------|
+|latest |Latest image built from the main branch. Usually coincides with a tagged release.|
+|develop|Latest image built from the develop branch. Commits are made to the develop branch before being merged to main. Old versions of `develop` are removed after 14 days.|
+
+Tags relating to releases are also available, for locking in on a specific version.
 
 ## Running 
 
