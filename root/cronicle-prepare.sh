@@ -42,9 +42,19 @@ then
     #Copying config directory to /config/cronicle/conf if not already there, then linking back into Cronicle
     if [ ! -d /config/cronicle/conf ]
     then
+
+        echo "Config dir is missing, creating."
+
         cp -r /app/cronicle/conf /config/cronicle/conf
         rm -rf /app/cronicle/conf
         ln -s /config/cronicle/conf /app/cronicle/conf
+    else
+
+        echo "Config dir already exists. Doesn't need creating."
+        echo "Linking persistent config dir back into Cronicle."
+        rm -rf /app/cronicle/conf
+        ln -s /config/cronicle/conf /app/cronicle/conf
+
     fi
 
     if [ ! -f /config/cronicle/data/.setup_done ]
@@ -60,16 +70,12 @@ then
         rm -rf /app/cronicle/data
         ln -s /config/cronicle/data /app/cronicle/data
 
-        #exec node /app/cronicle/lib/main.js --color 1
-
     else
 
         echo "Setup already completed."
 
         rm -rf /app/cronicle/data
         ln -s /config/cronicle/data /app/cronicle/data
-
-        #exec node /app/cronicle/lib/main.js --color 1
 
     fi
 
@@ -89,9 +95,7 @@ then
 
         #Removing default config.json and linking provided one back into Cronicle
         rm -rf /app/cronicle/conf/config.json
-        ln -s /config/config.json /app/cronicle/conf/config.json
-
-        #exec node /app/cronicle/lib/main.js --color 1
+        ln -s /config/cronicle/conf/config.json /app/cronicle/conf/config.json
 
     fi
 
@@ -100,8 +104,3 @@ else
     echo "'$MODE' is not a recognised appion for the MODE environment variable. Accepted appions are 'manager' and 'worker'."
 
 fi
-
-#echo "Applying permissions to /config and /app (this can take a while on first run or after PUID/PGID changes)"
-#chmod "=rwx" /config
-#chown -R mrmeeb:mrmeeb /config
-#chown -R mrmeeb:mrmeeb /app

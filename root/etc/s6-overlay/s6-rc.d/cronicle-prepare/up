@@ -1,1 +1,1 @@
-exec s6-setuidgid mrmeeb /cronicle-prepare.sh
+exec s6-setuidgid cronicle /cronicle-prepare.sh
