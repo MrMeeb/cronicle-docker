@@ -1,22 +1,110 @@
-
 kind: pipeline
 type: docker
-name: build-multiarch-images
+name: build-main-images
+trigger:
+  event:
+    exclude:
+    - pull_request
+  ref:
+    - refs/heads/main
+    - refs/tags/**
 
 platform:
   os: linux
   arch: amd64
 
 steps:
+
+- name: get-tags
+  image: docker:git
+  commands:
+    - git fetch --tags
+  when:
+    ref:
+      - refs/tags/**
+
+  # Set tags for main branch
 - name: make-tags
   image: node
   commands:
-    - echo -n "${DRONE_COMMIT_SHA:0:10}, latest" > .tags
+    - echo -n "${DRONE_COMMIT_SHA:0:8}, latest" > .tags
+  when:
+    ref:
+      - refs/heads/main
 
-- name: build  
+- name: make-tags-release
+  image: node
+  commands:
+    - echo -n "${DRONE_TAG}, latest" > .tags
+  when:
+    ref:
+      - refs/tags/**
+
+  # Build containers from main branch
+- name: build
   image: thegeeklab/drone-docker-buildx
   privileged: true
   settings:
+    provenance: false
+    registry: git.mrmeeb.stream
+    username: 
+      from_secret: docker_username
+    password: 
+      from_secret: docker_password
+    repo: git.mrmeeb.stream/mrmeeb/cronicle
+    platforms:
+      - linux/arm64
+      - linux/amd64
+
+- name: release
+  image: goreleaser/goreleaser
+  environment:
+    GITEA_TOKEN:
+      from_secret: gitea_token
+  commands:
+    - goreleaser release
+  when:
+    ref:
+      - refs/tags/**
+
+- name: notify
+  image: plugins/slack
+  when:
+    status:
+    - success
+    - failure
+  settings:
+    webhook: 
+      from_secret: slack_webhook
+
+---
+kind: pipeline
+type: docker
+name: build-develop-images
+trigger:
+  event:
+    exclude:
+    - pull_request
+  branch:
+    - develop
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+  # Set tags for develop branch - git commit SHA and 'develop'
+- name: make-tags
+  image: node
+  commands:
+    - echo -n "develop-${DRONE_COMMIT_SHA:0:8}, develop" > .tags
+   
+  # Build containers from develop branch
+- name: build
+  image: thegeeklab/drone-docker-buildx
+  privileged: true
+  settings:
+    provenance: false
     registry: git.mrmeeb.stream
     username: 
       from_secret: docker_username
@@ -36,10 +124,3 @@ steps:
   settings:
     webhook: 
       from_secret: slack_webhook
-
-trigger:
-  branch:
-    - main
-  event:
-    exclude:
-    - pull_request
