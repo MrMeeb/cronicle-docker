@@ -28,26 +28,26 @@ MODE=${MODE}
 if [[ ! "${PUID}" -eq 0 ]] && [[ ! "${PGID}" -eq 0 ]]; then
     echo "Executing usermod..."
     mkdir "/tmp/temphome"
-    usermod -d "/tmp/temphome" mrmeeb
-    usermod -o -u "${PUID}" mrmeeb
-    usermod -d /config mrmeeb
+    usermod -d "/tmp/temphome" cronicle
+    usermod -o -u "${PUID}" cronicle
+    usermod -d /config cronicle
     rm -rf "/tmp/temphome"
-    groupmod -o -g "${PGID}" mrmeeb
+    groupmod -o -g "${PGID}" cronicle
 else
     echo "Running as root is not supported, please fix your PUID and PGID!"
     exit 1
 fi
 
-echo "Checking permissions in /config and /app (this can take some time)."
+echo "Checking permissions in /config and /app."
 
 if [ ! "$(stat -c %u /app)" -eq "${PUID}" ] || [ ! "$(stat -c %g /app)" -eq "${PGID}" ]
 then
-    echo "Fixing permissions for /app."
-    chown -R mrmeeb:mrmeeb /app
+    echo "Fixing permissions for /app (this can take some time)."
+    chown -R cronicle:cronicle /app
 fi
 
 if [ ! "$(stat -c %u /config)" -eq "${PUID}" ] || [ ! "$(stat -c %g /config)" -eq "${PGID}" ]
 then
-    echo "Fixing permissions for /config."
-    chown -R mrmeeb:mrmeeb /config
+    echo "Fixing permissions for /config (this can take some time)."
+    chown -R cronicle:cronicle /config
 fi
