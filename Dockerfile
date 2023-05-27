@@ -1,35 +1,47 @@
 FROM alpine:latest
 
+ARG S6_OVERLAY_VERSION=3.1.5.0
+
 ENV CRONICLE_foreground=1
 ENV CRONICLE_echo=1
 ENV CRONICLE_color=1
 ENV EDITOR=vi
 ENV MODE=manager
+ENV PUID=1000
+ENV PGID=1000
+ENV TZ=UTC
 
-#RUN apt update && apt install -y tini curl git procps
+#Get required packages
+RUN apk update && apk add tzdata curl shadow bash xz git procps nodejs npm
 
-RUN apk update && apk add bash tini git procps nodejs npm
+#Make folders
+RUN mkdir /config && \
+    mkdir /app && \
+#Create default user
+    useradd -u 1000 -U -d /config -s /bin/false mrmeeb && \
+    usermod -G users mrmeeb
 
-RUN git clone https://github.com/cronicle-edge/cronicle-edge.git /opt/cronicle
+#Install s6-overlay
+RUN curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz" | tar Jpxf - -C / && \
+    curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-x86_64.tar.xz" | tar Jpxf - -C / && \
+    curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-symlinks-noarch.tar.xz" | tar Jpxf - -C / && \
+    curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-symlinks-arch.tar.xz" | tar Jpxf - -C /
+ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2 S6_CMD_WAIT_FOR_SERVICES_MAXTIME=0 S6_VERBOSITY=1
 
-WORKDIR /opt/cronicle
+#Install Cronicle
+RUN git clone https://github.com/cronicle-edge/cronicle-edge.git /app/cronicle
+WORKDIR /app/cronicle
+RUN npm install && \
+    node bin/build dist
+RUN rm -rf /app/cronicle/Docker* .vscode
 
-RUN npm install
-
-RUN node bin/build dist
-
-COPY run.sh /
-
-RUN chmod +x /run.sh
-
-RUN mkdir /config
-
+#Create Cronicle user, necessary for SSH plugin with default settings
 RUN adduser --disabled-password --no-create-home cronicle
 
-#RUN ln -sf /dev/stdout /opt/cronicle/logs/Cronicle.log
+COPY root/ /
+RUN chmod +x /cronicle-prepare.sh && \
+    chmod +x /container-init.sh
 
 EXPOSE 3012
 
-ENTRYPOINT ["/sbin/tini", "--"]
-
-CMD [ "/run.sh" ]
+ENTRYPOINT [ "/init" ]

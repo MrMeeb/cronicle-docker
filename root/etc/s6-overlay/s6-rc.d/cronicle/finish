@@ -1,0 +1,1 @@
+echo "$e" > /run/s6-linux-init-container-results/exitcode
