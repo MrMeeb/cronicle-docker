@@ -38,16 +38,16 @@ else
     exit 1
 fi
 
-echo "Checking permissions in /config and /app (this can take some time)."
+echo "Checking permissions in /config and /app."
 
 if [ ! "$(stat -c %u /app)" -eq "${PUID}" ] || [ ! "$(stat -c %g /app)" -eq "${PGID}" ]
 then
-    echo "Fixing permissions for /app."
+    echo "Fixing permissions for /app (this can take some time)."
     chown -R cronicle:cronicle /app
 fi
 
 if [ ! "$(stat -c %u /config)" -eq "${PUID}" ] || [ ! "$(stat -c %g /config)" -eq "${PGID}" ]
 then
-    echo "Fixing permissions for /config."
+    echo "Fixing permissions for /config (this can take some time)."
     chown -R cronicle:cronicle /config
 fi
