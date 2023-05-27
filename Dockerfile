@@ -52,7 +52,8 @@ RUN npm install && \
 
 COPY root/ /
 RUN chmod +x /cronicle-prepare.sh && \
-    chmod +x /container-init.sh
+    chmod +x /container-init.sh && \
+    chown -R ${PUID}:${PGID} /app /config
 
 EXPOSE 3012
 
