@@ -10,6 +10,7 @@ ENV S6_OVERLAY_ARCH=aarch64
 FROM base-${TARGETARCH}${TARGETVARIANT}
 
 ARG S6_OVERLAY_VERSION=3.1.5.0
+ARG CRONICLE_EDGE_VERSION=1.6.2
 
 ENV CRONICLE_foreground=1
 ENV CRONICLE_echo=1
@@ -38,11 +39,16 @@ RUN curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/
 ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2 S6_CMD_WAIT_FOR_SERVICES_MAXTIME=0 S6_VERBOSITY=1
 
 #Install Cronicle
-RUN git clone https://github.com/cronicle-edge/cronicle-edge.git /app/cronicle
+RUN mkdir /app/cronicle && \
+    cd /app/cronicle && \
+    wget https://github.com/cronicle-edge/cronicle-edge/archive/refs/tags/v${CRONICLE_EDGE_VERSION}.tar.gz && \
+    tar -xf v${CRONICLE_EDGE_VERSION}.tar.gz --strip-components 1 && \
+    rm -rf /app/cronicle/Docker* && \
+    rm -rf v${CRONICLE_EDGE_VERSION}.tar.gz
+
 WORKDIR /app/cronicle
 RUN npm install && \
     node bin/build dist
-RUN rm -rf /app/cronicle/Docker* .vscode
 
 COPY root/ /
 RUN chmod +x /cronicle-prepare.sh && \
