@@ -1,19 +1,16 @@
 # Cronicle Docker
 
-[![Build Status](https://drone.mrmeeb.stream/api/badges/MrMeeb/cronicle-docker/status.svg)](https://drone.mrmeeb.stream/MrMeeb/cronicle-docker) - _Every new commit triggers a build. I'm lazy._
-
-
 Dockerised Cronicle, based on the [Cronicle-Edge](https://github.com/cronicle-edge/cronicle-edge) fork.
 
 Can function in both the **manager** and **worker** role.
 
 ## Running 
 
-`config.json`, located in `/config/config.json`, is automatically generated on the first run of Cronicle in 'manager' mode. This file must be kept identical between the manager and any workers it controls.
+`config.json`, located in `/config/cronicle/conf/config.json`, is automatically generated on the first run of Cronicle in 'manager' mode. This file must be kept identical between the manager and any workers it controls.
 
-If you want to configure Cronicle before first run, download `config_sample.json` and adjust accordingly before placing in `/config/config.json`.
+If you want to configure Cronicle before first run (e.g to use a different storage engine), download `config_sample.json` and adjust accordingly before placing in `/config/cronicle/conf/config.json`.
 
-NOTE: You must define the hostname of the container. Cronicle expects the hostname to remain the same, so the randomly-generated container hostname can cause problems if it changes.
+:exclamation: NOTE: You must define the hostname of the container. Cronicle expects the hostname to remain the same, so the randomly-generated container hostname can cause problems if it changes. :exclamation:
 
 ### Docker CLI
 ```
@@ -21,6 +18,9 @@ docker run -d --name cronicle \
     --hostname cronicle-manager \
     -p 3012:3012 \
     -e MODE=manager \
+    -e PUID=1000 \
+    -e PGID=1000 \
+    -e TZ=Europe/London \
     -v {path on host}:/config
     git.mrmeeb.stream/mrmeeb/cronicle:latest 
 ```
@@ -41,11 +41,14 @@ services:
       - {path on host}:/config
     environment:
       - MODE=manager
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
 ```
 
 ## Custom Scripts
 
-This container automatically checks for scripts in `/config/init` and runs them at startup of the container. This could be useful if you need to install additional applications into a worker container so it can execute any jobs.
+This container automatically checks for scripts in `/config/init` and runs them at startup. This could be useful if you need to install additional applications into a worker container so it can execute jobs.
 
 ## Ports
 
@@ -63,3 +66,6 @@ This container automatically checks for scripts in `/config/init` and runs them 
 |Variable|Options|Default|Description|
 |--------|-------|-------|-------|
 |MODE    |manager, worker|manager|Determines what mode Cronicle runs in
+|PUID    |int    |1000   |Sets the UID of the user Cronicle runs under
+|PGID    |int    |1000   |Sets the GID of the user Cronicle runs under
+|TZ      |[List of valid TZs](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List)    |UTC    |Sets the timezone of the container and by extension Cronicle
