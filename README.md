@@ -6,6 +6,13 @@ Dockerised Cronicle, based on the [Cronicle-Edge](https://github.com/cronicle-ed
 
 Can function in both the **manager** and **worker** role.
 
+*This repo is mirrored to GitHub*
+
+## Links
+- :tea: [Gitea Repo (source)](https://git.mrmeeb.stream/MrMeeb/cronicle-docker)
+- :whale2: [Containers](https://git.mrmeeb.stream/MrMeeb/-/packages/container/cronicle/latest) - since I'm currently not also publishing them to ghcr.io
+- :mirror: [GitHub mirror](https://github.com/MrMeeb/cronicle-docker)
+
 ## Tags
 
 |Tag    |Description|
@@ -19,9 +26,9 @@ Tags relating to releases are also available, for locking in on a specific versi
 
 `config.json`, located in `/config/cronicle/conf/config.json`, is automatically generated on the first run of Cronicle in 'manager' mode. This file must be kept identical between the manager and any workers it controls.
 
-If you want to configure Cronicle before first run (e.g to use a different storage engine), download `config_sample.json` and adjust accordingly before placing in `/config/cronicle/conf/config.json`.
+If you want to configure Cronicle before first run (e.g to use a different storage engine), download `config_sample.json` and adjust accordingly before placing in `/config/cronicle/conf/config.json`. Make sure to change the `secret`!
 
-:exclamation: NOTE: You must define the hostname of the container. Cronicle expects the hostname to remain the same, so the randomly-generated container hostname can cause problems if it changes. :exclamation:
+:exclamation: You must define the hostname of the container. Cronicle expects the hostname to remain the same, so the randomly-generated container hostname can cause problems if it changes. :exclamation:
 
 ### Docker CLI
 ```
