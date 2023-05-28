@@ -20,6 +20,7 @@ ENV MODE=manager
 ENV PUID=1000
 ENV PGID=1000
 ENV TZ=UTC
+ENV LOG_LEVEL=9
 
 #Get required packages
 RUN apk update && apk add tzdata curl shadow bash xz git procps nodejs npm nano

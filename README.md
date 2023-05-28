@@ -87,3 +87,4 @@ This container automatically checks for scripts in `/config/init` and runs them 
 |PUID    |int    |1000   |Sets the UID of the user Cronicle runs under
 |PGID    |int    |1000   |Sets the GID of the user Cronicle runs under
 |TZ      |[List of valid TZs](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List)    |UTC    |Sets the timezone of the container and by extension Cronicle
+|LOG_LEVEL|1-10  |9      |Sets log level from `1` (quietest) to `10` (loudest)|
