@@ -41,7 +41,7 @@ steps:
       - refs/tags/**
 
   # Build containers from main branch
-- name: build
+- name: build-gitea
   image: thegeeklab/drone-docker-buildx
   privileged: true
   settings:
@@ -56,16 +56,46 @@ steps:
       - linux/arm64
       - linux/amd64
 
-- name: release
+- name: build-github
+  image: thegeeklab/drone-docker-buildx
+  privileged: true
+  settings:
+    provenance: false
+    registry: ghcr.io
+    username: 
+      from_secret: docker_username
+    password: 
+      from_secret: github_token
+    repo: ghcr.io/mrmeeb/cronicle
+    platforms:
+      - linux/arm64
+      - linux/amd64
+
+- name: release-gitea
   image: goreleaser/goreleaser
   environment:
     GITEA_TOKEN:
       from_secret: gitea_token
   commands:
-    - goreleaser release
+    - goreleaser release -f .goreleaser-gitea.yaml
   when:
     ref:
       - refs/tags/**
+  depends_on:
+    - build-gitea
+
+- name: release-github
+  image: goreleaser/goreleaser
+  environment:
+    GITHUB_TOKEN:
+      from_secret: github_token
+  commands:
+    - goreleaser release -f .goreleaser-github.yaml
+  when:
+    ref:
+      - refs/tags/**
+  depends_on:
+    - build-github
 
 - name: notify
   image: plugins/slack
@@ -76,6 +106,9 @@ steps:
   settings:
     webhook: 
       from_secret: slack_webhook
+  depends_on:
+    - release-gitea
+    - release-github
 
 ---
 kind: pipeline
@@ -100,7 +133,7 @@ steps:
     - echo -n "develop-${DRONE_COMMIT_SHA:0:8}, develop" > .tags
    
   # Build containers from develop branch
-- name: build
+- name: build-gitea
   image: thegeeklab/drone-docker-buildx
   privileged: true
   settings:
@@ -115,6 +148,21 @@ steps:
       - linux/arm64
       - linux/amd64
 
+- name: build-github
+  image: thegeeklab/drone-docker-buildx
+  privileged: true
+  settings:
+    provenance: false
+    registry: ghcr.io
+    username: 
+      from_secret: docker_username
+    password: 
+      from_secret: github_token
+    repo: ghcr.io/mrmeeb/cronicle
+    platforms:
+      - linux/arm64
+      - linux/amd64
+
 - name: notify
   image: plugins/slack
   when:
@@ -124,3 +172,6 @@ steps:
   settings:
     webhook: 
       from_secret: slack_webhook
+  depends_on:
+    - build-gitea
+    - build-github
