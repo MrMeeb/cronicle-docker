@@ -22,6 +22,8 @@ steps:
   when:
     ref:
       - refs/tags/**
+  depends_on:
+    - clone
 
   # Set tags for main branch
 - name: make-tags
@@ -33,6 +35,7 @@ steps:
       - refs/heads/main
   depends_on:
     - get-tags
+    - clone
 
 - name: make-tags-release
   image: node
@@ -43,6 +46,7 @@ steps:
       - refs/tags/**
   depends_on:
     - get-tags
+    - clone
 
   # Build containers from main branch
 - name: build-gitea
@@ -119,6 +123,8 @@ steps:
   depends_on:
     - release-gitea
     - release-github
+    - build-github
+    - build-gitea
 
 ---
 kind: pipeline
