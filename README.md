@@ -8,7 +8,7 @@ This container can function in both the **manager** and **worker** role.
 
 ## Links
 - :tea: [Gitea Repo (source)](https://git.mrmeeb.stream/MrMeeb/cronicle-docker)
-- :whale2: [Containers](https://git.mrmeeb.stream/MrMeeb/-/packages/container/cronicle/latest) (also published the GHCR)
+- :whale2: [Containers](https://git.mrmeeb.stream/MrMeeb/-/packages/container/cronicle/latest) (also published to GHCR)
 - :mirror: [GitHub mirror](https://github.com/MrMeeb/cronicle-docker)
 - :package: [Cronicle Repo](https://github.com/jhuckaby/Cronicle)
 - :package: [Cronicle-Edge Repo](https://github.com/cronicle-edge/cronicle-edge)
