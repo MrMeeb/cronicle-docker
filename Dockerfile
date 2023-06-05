@@ -15,14 +15,15 @@ ARG CRONICLE_EDGE_VERSION=1.6.2
 ENV CRONICLE_foreground=1
 ENV CRONICLE_echo=1
 ENV CRONICLE_color=1
-ENV EDITOR=vi
+ENV EDITOR=nano
 ENV MODE=manager
 ENV PUID=1000
 ENV PGID=1000
 ENV TZ=UTC
+ENV LOG_LEVEL=9
 
 #Get required packages
-RUN apk update && apk add tzdata curl shadow bash xz git procps nodejs npm
+RUN apk update && apk add tzdata curl shadow bash xz git procps nodejs npm nano
 
 #Make folders
 RUN mkdir /config && \

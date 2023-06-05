@@ -104,3 +104,21 @@ else
     echo "'$MODE' is not a recognised appion for the MODE environment variable. Accepted appions are 'manager' and 'worker'."
 
 fi
+
+#Expose log directory
+if [ ! -d /config/cronicle/logs ]
+then
+
+    echo "Logs dir is missing, creating."
+
+    cp -r /app/cronicle/logs /config/cronicle/logs
+    rm -rf /app/cronicle/logs
+    ln -s /config/cronicle/logs /app/cronicle/logs
+else
+
+    echo "Logs dir already exists. Doesn't need creating."
+    echo "Linking persistent logs dir back into Cronicle."
+    rm -rf /app/cronicle/logs
+    ln -s /config/cronicle/logs /app/cronicle/logs
+
+fi
