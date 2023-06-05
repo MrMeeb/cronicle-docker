@@ -1,0 +1,20 @@
+dist: dist-github
+
+build:
+  skip: true
+
+archives:
+- format: binary
+
+release:
+  draft: true
+  github:
+    owner: MrMeeb
+    name: cronicle-docker
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
