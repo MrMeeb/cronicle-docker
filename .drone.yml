@@ -1,12 +1,11 @@
 kind: pipeline
 type: docker
-name: build-main-images
+name: build-release-images
 trigger:
   event:
     exclude:
     - pull_request
   ref:
-    - refs/heads/main
     - refs/tags/**
 
 platform:
@@ -19,36 +18,16 @@ steps:
   image: docker:git
   commands:
     - git fetch --tags
-  when:
-    ref:
-      - refs/tags/**
   depends_on:
     - clone
 
-  # Set tags for main branch
 - name: make-tags
   image: node
   commands:
-    - echo -n "${DRONE_COMMIT_SHA:0:8}, latest" > .tags
-  when:
-    ref:
-      - refs/heads/main
-  depends_on:
-    - get-tags
-    - clone
-
-- name: make-tags-release
-  image: node
-  commands:
     - echo -n "${DRONE_TAG}, latest" > .tags
-  when:
-    ref:
-      - refs/tags/**
   depends_on:
     - get-tags
-    - clone
 
-  # Build containers from main branch
 - name: build-gitea
   image: thegeeklab/drone-docker-buildx
   privileged: true
@@ -65,7 +44,6 @@ steps:
       - linux/amd64
   depends_on:
     - make-tags
-    - make-tags-release
 
 - name: build-github
   image: thegeeklab/drone-docker-buildx
@@ -83,7 +61,6 @@ steps:
       - linux/amd64
   depends_on:
     - make-tags
-    - make-tags-release
 
 - name: release-gitea
   image: goreleaser/goreleaser
@@ -92,9 +69,6 @@ steps:
       from_secret: gitea_token
   commands:
     - goreleaser release -f .goreleaser-gitea.yaml
-  when:
-    ref:
-      - refs/tags/**
   depends_on:
     - build-gitea
 
@@ -105,9 +79,6 @@ steps:
       from_secret: github_token
   commands:
     - goreleaser release -f .goreleaser-github.yaml
-  when:
-    ref:
-      - refs/tags/**
   depends_on:
     - build-github
 
@@ -123,6 +94,78 @@ steps:
   depends_on:
     - release-gitea
     - release-github
+
+---
+kind: pipeline
+type: docker
+name: build-main-images
+trigger:
+  event:
+    exclude:
+    - pull_request
+  ref:
+    - refs/heads/main
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+
+- name: make-tags
+  image: node
+  commands:
+    - echo -n "${DRONE_COMMIT_SHA:0:8}, latest" > .tags
+  when:
+    ref:
+      - refs/heads/main
+  depends_on:
+    - clone
+
+- name: build-gitea
+  image: thegeeklab/drone-docker-buildx
+  privileged: true
+  settings:
+    provenance: false
+    registry: git.mrmeeb.stream
+    username: 
+      from_secret: docker_username
+    password: 
+      from_secret: docker_password
+    repo: git.mrmeeb.stream/mrmeeb/cronicle
+    platforms:
+      - linux/arm64
+      - linux/amd64
+  depends_on:
+    - make-tags
+
+- name: build-github
+  image: thegeeklab/drone-docker-buildx
+  privileged: true
+  settings:
+    provenance: false
+    registry: ghcr.io
+    username: 
+      from_secret: docker_username
+    password: 
+      from_secret: github_token
+    repo: ghcr.io/mrmeeb/cronicle
+    platforms:
+      - linux/arm64
+      - linux/amd64
+  depends_on:
+    - make-tags
+
+- name: notify
+  image: plugins/slack
+  when:
+    status:
+    - success
+    - failure
+  settings:
+    webhook: 
+      from_secret: slack_webhook
+  depends_on:
     - build-github
     - build-gitea
 
