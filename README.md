@@ -92,6 +92,35 @@ services:
 
 This container automatically checks for scripts in `/config/init` and runs them at startup. This could be useful if you need to install additional applications into a worker container so it can execute jobs.
 
+## Reverse Proxying
+
+For a single manager behind a reverse proxy, you may need to specify a specific route for the web-socket connections.
+
+An example using nginx: 
+
+```  
+  location /socket.io/ {
+        client_max_body_size                    2048m;
+        proxy_read_timeout                      86400s;
+        proxy_send_timeout                      86400s;
+        proxy_set_header                        X-Forwarded-Host $host;
+        proxy_set_header                        X-Forwarded-Server $host;
+        proxy_set_header                        X-Real-IP $remote_addr;
+        proxy_set_header                        Host $host;
+        proxy_set_header                        X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_http_version                      1.1;
+        proxy_redirect                          off;
+        proxy_set_header                        Upgrade $http_upgrade;
+        proxy_set_header                        Connection "upgrade"; 
+
+    proxy_pass          http://localhost:3012/socket.io/;
+  }
+  ```
+
+Source: https://github.com/jhuckaby/Cronicle/issues/535
+
+Load-balancing between multiple managers, as described [here](https://github.com/jhuckaby/Cronicle/blob/master/docs/Setup.md#load-balancers), has not been tested, and could behave strangely due to docker DNS.
+
 ## Ports
 
 |Port |Description|
