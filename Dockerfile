@@ -23,7 +23,7 @@ ENV TZ=UTC
 ENV LOG_LEVEL=9
 
 #Get required packages
-RUN apk update && apk add tzdata curl shadow bash xz git procps nodejs npm nano
+RUN apk update && apk add tzdata curl shadow bash xz git procps nodejs npm nano openssl
 
 #Make folders
 RUN mkdir /config && \
@@ -57,5 +57,6 @@ RUN chmod +x /cronicle-prepare.sh && \
     chown -R ${PUID}:${PGID} /app /config
 
 EXPOSE 3012
+EXPOSE 3013
 
 ENTRYPOINT [ "/init" ]

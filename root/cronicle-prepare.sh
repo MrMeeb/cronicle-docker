@@ -28,9 +28,11 @@ fi
 
 if [ ! -d /config/cronicle ]
 then
+
     echo "Directory /config/cronicle not found. Creating."
 
     mkdir /config/cronicle
+
 fi
 
 #Detecting what mode Cronicle should be started in
@@ -48,15 +50,27 @@ then
         cp -r /app/cronicle/conf /config/cronicle/conf
         rm -rf /app/cronicle/conf
         ln -s /config/cronicle/conf /app/cronicle/conf
+
     else
 
         echo "Config dir already exists. Doesn't need creating."
         echo "Linking persistent config dir back into Cronicle."
+
         rm -rf /app/cronicle/conf
         ln -s /config/cronicle/conf /app/cronicle/conf
 
     fi
 
+    if [ ! -f /config/cronicle/conf/ssl.crt ] || [ ! -f /config/cronicle/conf/ssl.key ]
+    then
+
+        echo "One or both SSL components are missing. Generating."
+
+        rm -f /config/cronicle/conf/ssl.crt /config/cronicle/conf/ssl.key
+        openssl req -x509 -newkey rsa:4096 -keyout /config/cronicle/conf/ssl.key -out /config/cronicle/conf/ssl.crt -sha256 -days 3650 -nodes -subj "/C=XX/ST=StateName/L=CityName/O=CompanyName/OU=CompanySectionName/CN=CommonNameOrHostname"
+
+    fi
+    
     if [ ! -f /config/cronicle/data/.setup_done ]
     then
 
@@ -88,6 +102,8 @@ then
     then
 
         echo "No config found. Copy config.json from the manager server and place it in /config/cronicle/conf dir."
+        echo "Don't forget to also copy the SSL certs if you're using SSL."
+
         mkdir -p /config/cronicle/conf
         exit 0
 
@@ -114,10 +130,12 @@ then
     cp -r /app/cronicle/logs /config/cronicle/logs
     rm -rf /app/cronicle/logs
     ln -s /config/cronicle/logs /app/cronicle/logs
+
 else
 
     echo "Logs dir already exists. Doesn't need creating."
     echo "Linking persistent logs dir back into Cronicle."
+    
     rm -rf /app/cronicle/logs
     ln -s /config/cronicle/logs /app/cronicle/logs
 
