@@ -44,7 +44,7 @@ RUN mkdir /app/cronicle && \
     cd /app/cronicle && \
     wget https://github.com/cronicle-edge/cronicle-edge/archive/refs/tags/v${CRONICLE_EDGE_VERSION}.tar.gz && \
     tar -xf v${CRONICLE_EDGE_VERSION}.tar.gz --strip-components 1 && \
-    rm -rf Docker* .gitignore Readme.md .vscode && \
+    rm -rf Docker* .gitignore Readme.md .vscode sample_conf/examples/backup sample_conf/examples/docker.sh && \
     rm -rf v${CRONICLE_EDGE_VERSION}.tar.gz
 
 WORKDIR /app/cronicle
