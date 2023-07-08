@@ -98,26 +98,34 @@ then
 
     echo "Cronicle is running in 'worker' mode."
 
+    #Copying config directory to /config/cronicle/conf if not already there, then linking back into Cronicle
     if [ ! -f /config/cronicle/conf/config.json ]
     then
 
         echo "No config found. Copy config.json from the manager server and place it in /config/cronicle/conf dir."
-        echo "Don't forget to also copy the SSL certs if you're using SSL."
-
-        mkdir -p /config/cronicle/conf
-        exit 0
+        cp -r /app/cronicle/conf /config/cronicle/conf
+        rm -rf /config/cronicle/conf/config.json
+        rm -rf /app/cronicle/conf
+        ln -s /config/cronicle/conf /app/cronicle/conf
+        echo ''
+        echo ''
+        echo '*************************************'
+        exit 1
 
     else
 
-        #Removing default config.json and linking provided one back into Cronicle
-        rm -rf /app/cronicle/conf/config.json
-        ln -s /config/cronicle/conf/config.json /app/cronicle/conf/config.json
+        echo "Config is present."
+        echo "Linking persistent config dir back into Cronicle."
+
+        rm -rf /app/cronicle/conf
+        ln -s /config/cronicle/conf /app/cronicle/conf
 
     fi
 
 else
 
-    echo "'$MODE' is not a recognised appion for the MODE environment variable. Accepted appions are 'manager' and 'worker'."
+    echo "'$MODE' is not a recognised appion for the MODE environment variable. Accepted options are 'manager' and 'worker'."
+    exit 1
 
 fi
 
