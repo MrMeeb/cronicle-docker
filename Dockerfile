@@ -23,7 +23,7 @@ ENV TZ=UTC
 ENV LOG_LEVEL=9
 
 #Get required packages
-RUN apk update && apk add tzdata curl shadow bash xz git procps nodejs npm nano openssl
+RUN apk update && apk add tzdata curl shadow bash xz git procps nodejs npm nano openssl ca-certificates
 
 #Make folders
 RUN mkdir /config && \
