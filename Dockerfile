@@ -23,7 +23,7 @@ ENV TZ=UTC
 ENV LOG_LEVEL=9
 
 #Get required packages
-RUN apk update && apk add tzdata curl shadow bash xz git procps nodejs npm nano openssl ca-certificates
+RUN apk update && apk add --no-cache tzdata curl shadow bash xz git procps nodejs npm nano openssl ca-certificates
 
 #Make folders
 RUN mkdir /config && \
@@ -39,13 +39,18 @@ RUN curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/
     curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-symlinks-arch.tar.xz" | tar Jpxf - -C /
 ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2 S6_CMD_WAIT_FOR_SERVICES_MAXTIME=0 S6_VERBOSITY=1
 
-#Install Cronicle
-RUN mkdir /app/cronicle && \
+#Install Cronicle & tidy up things I don't want
+RUN apk add --no-cache --virtual .jq jq && \
+    mkdir /app/cronicle && \
     cd /app/cronicle && \
     wget https://github.com/cronicle-edge/cronicle-edge/archive/refs/tags/v${CRONICLE_EDGE_VERSION}.tar.gz && \
     tar -xf v${CRONICLE_EDGE_VERSION}.tar.gz --strip-components 1 && \
     rm -rf Docker* .gitignore Readme.md .vscode sample_conf/examples/backup sample_conf/examples/docker.sh && \
-    rm -rf v${CRONICLE_EDGE_VERSION}.tar.gz
+    jq 'del(.storage[] | select(contains(["global/conf_keys"])))' sample_conf/setup.json >> sample_conf/setup-new.json && \
+    rm sample_conf/setup.json && \
+    mv sample_conf/setup-new.json sample_conf/setup.json && \
+    rm -rf v${CRONICLE_EDGE_VERSION}.tar.gz && \
+    apk del .jq
 
 WORKDIR /app/cronicle
 RUN npm install && \
