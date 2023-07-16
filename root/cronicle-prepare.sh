@@ -3,29 +3,6 @@
 
 echo "Preparing Cronicle"
 
-#Importing and running additional scripts placed in /config/init
-if [ -d /config/init ]
-then
-	if [ "$(ls -A /config/init)" ]
-    then
-
-        echo "Running additional startup scripts."
-
-        bash /config/init/*
-	
-    else
-        
-        echo "/config/init is empty - no additional startup scripts detected."
-	
-    fi
-else
-
-	echo "Directory /config/init not found. Creating."
-
-    mkdir /config/init
-
-fi
-
 if [ ! -d /config/cronicle ]
 then
 
