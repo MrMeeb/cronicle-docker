@@ -39,6 +39,19 @@ else
     exit 1
 fi
 
+#Importing and running additional scripts placed in /config/init
+if [ -d /config/init ]; then
+	if [ "$(ls -A /config/init)" ]; then
+        echo "Running additional startup scripts."
+        bash /config/init/*
+    else
+        echo "/config/init is empty - no additional startup scripts detected."
+    fi
+else
+	echo "Directory /config/init not found. Creating."
+    mkdir /config/init
+fi
+
 echo "Checking permissions in /config and /app."
 
 if [ ! "$(stat -c %u /app)" -eq "${PUID}" ] || [ ! "$(stat -c %g /app)" -eq "${PGID}" ]
