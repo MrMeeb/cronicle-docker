@@ -51,7 +51,7 @@ if [ -d /config/init ]; then
     fi
 else
 	echo "Directory /config/init not found. Creating."
-    mkdir /config/init & chown -R cronicle:cronicle /config/init
+    mkdir /config/init && chown -R cronicle:cronicle /config/init
 fi
 
 echo "Checking permissions in /config and /app."
