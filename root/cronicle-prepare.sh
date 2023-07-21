@@ -80,10 +80,8 @@ then
     then
 
         echo "No config found. Copy config.json from the manager server and place it in /config/cronicle/conf dir."
-        cp -r /app/cronicle/conf /config/cronicle/conf
+        cp -R /app/cronicle/conf /config/cronicle/conf
         rm -rf /config/cronicle/conf/config.json
-        rm -rf /app/cronicle/conf
-        ln -s /config/cronicle/conf /app/cronicle/conf
         echo ''
         echo ''
         echo '*************************************'
