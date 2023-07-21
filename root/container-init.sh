@@ -43,7 +43,9 @@ fi
 if [ -d /config/init ]; then
 	if [ "$(ls -A /config/init)" ]; then
         echo "Running additional startup scripts."
-        bash /config/init/*
+        for f in /config/init/*.sh; do
+            bash "$f" 
+        done
     else
         echo "/config/init is empty - no additional startup scripts detected."
     fi
