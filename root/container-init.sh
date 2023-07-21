@@ -56,13 +56,13 @@ fi
 
 echo "Checking permissions in /config and /app."
 
-if [ ! "$(stat -c %u /app)" -eq "${PUID}" ] || [ ! "$(stat -c %g /app)" -eq "${PGID}" ]
+if [ -n "$(find /app \! -user ${PUID})" ] || [ -n "$(find /app \! -group ${PGID})" ]
 then
     echo "Fixing permissions for /app (this can take some time)."
     chown -R cronicle:cronicle /app
 fi
 
-if [ ! "$(stat -c %u /config)" -eq "${PUID}" ] || [ ! "$(stat -c %g /config)" -eq "${PGID}" ]
+if [ -n "$(find /config \! -user ${PUID})" ] || [ -n "$(find /config \! -group ${PGID})" ]
 then
     echo "Fixing permissions for /config (this can take some time)."
     chown -R cronicle:cronicle /config
