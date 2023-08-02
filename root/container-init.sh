@@ -39,15 +39,30 @@ else
     exit 1
 fi
 
+#Importing and running additional scripts placed in /config/init
+if [ -d /config/init ]; then
+	if [ "$(ls -A /config/init)" ]; then
+        echo "Running additional startup scripts."
+        for f in /config/init/*.sh; do
+            bash "$f" 
+        done
+    else
+        echo "/config/init is empty - no additional startup scripts detected."
+    fi
+else
+	echo "Directory /config/init not found. Creating."
+    mkdir /config/init && chown -R cronicle:cronicle /config/init
+fi
+
 echo "Checking permissions in /config and /app."
 
-if [ ! "$(stat -c %u /app)" -eq "${PUID}" ] || [ ! "$(stat -c %g /app)" -eq "${PGID}" ]
+if [ -n "$(find /app \! -user ${PUID})" ] || [ -n "$(find /app \! -group ${PGID})" ]
 then
     echo "Fixing permissions for /app (this can take some time)."
     chown -R cronicle:cronicle /app
 fi
 
-if [ ! "$(stat -c %u /config)" -eq "${PUID}" ] || [ ! "$(stat -c %g /config)" -eq "${PGID}" ]
+if [ -n "$(find /config \! -user ${PUID})" ] || [ -n "$(find /config \! -group ${PGID})" ]
 then
     echo "Fixing permissions for /config (this can take some time)."
     chown -R cronicle:cronicle /config

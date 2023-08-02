@@ -92,6 +92,8 @@ services:
 
 This container automatically checks for scripts in `/config/init` and runs them at startup. This could be useful if you need to install additional applications into a worker container so it can execute jobs.
 
+Note that any scripts will be run as `root` before permissions are altered in `/app` and `/config`. Anything that an init script does in either of these folders will be owned by `cronicle` when the container continues.
+
 ## Reverse Proxying
 
 For a single manager behind a reverse proxy, you may need to specify a specific route for the web-socket connections.
