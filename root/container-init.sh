@@ -59,11 +59,11 @@ echo "Checking permissions in /config and /app."
 if [ -n "$(find /app \! -user ${PUID})" ] || [ -n "$(find /app \! -group ${PGID})" ]
 then
     echo "Fixing permissions for /app (this can take some time)."
-    chown -R cronicle:cronicle /app
+    chown -R cronicle:cronicle /app || true
 fi
 
 if [ -n "$(find /config \! -user ${PUID})" ] || [ -n "$(find /config \! -group ${PGID})" ]
 then
     echo "Fixing permissions for /config (this can take some time)."
-    chown -R cronicle:cronicle /config
+    chown -R cronicle:cronicle /config || true
 fi
